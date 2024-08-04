@@ -1,5 +1,8 @@
+import { useState } from "react";
+
 export function App() {
-  const board = Array(9).fill(null);
+  // LOGICA
+  const [board, SetBoard] = useState(Array(9).fill(null));
   const TURNS = {
     X: (
       <svg
@@ -8,7 +11,7 @@ export function App() {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="red"
-        className="size-6"
+        className="size-6 X"
       >
         <path
           strokeLinecap="round"
@@ -23,6 +26,7 @@ export function App() {
         height="100"
         viewBox="0 0 100 100"
         xmlns="http://www.w3.org/2000/svg"
+        className="O"
       >
         <path
           d="M50,10 A40,40 0 1,0 50,90 A40,40 0 1,0 50,10"
@@ -33,6 +37,27 @@ export function App() {
       </svg>
     ),
   };
+  const [turno, setTurno] = useState("X");
+
+  function Square({ isTurn, children, onClick }) {
+    let className = `square ${isTurn ? `isTurn` : ``}`;
+    return (
+      <div className={className} onClick={onClick}>
+        {children}
+      </div>
+    );
+  }
+
+  function ActualizeBoard(indexClickeado, valorDentroDelCuadrado) {
+    if (valorDentroDelCuadrado === null) {
+      setTurno((prevTurno) => (prevTurno === "X" ? "O" : "X"));
+      const newBoard = [...board];
+      newBoard[indexClickeado] = turno === "X" ? TURNS.X : TURNS.O;
+      SetBoard(newBoard);
+    }
+  }
+
+  // LO QUE RETORNA A LA WEB
   return (
     <main className="game">
       <h1 className="title">Tic Tac Toe</h1>
@@ -40,16 +65,21 @@ export function App() {
       <section className="board">
         {board.map((cuadradoVal, index) => {
           return (
-            <div className="square" key={index}>
+            <Square
+              key={index}
+              onClick={() => {
+                ActualizeBoard(index, cuadradoVal);
+              }}
+            >
               {cuadradoVal}
-            </div>
+            </Square>
           );
         })}
       </section>
 
       <section className="turns">
-        <div className="square square-turnX isTurn">{TURNS.X}</div>
-        <div className="square square-turnO">{TURNS.O}</div>
+        <Square isTurn={turno === "X"}>{TURNS.X}</Square>
+        <Square isTurn={turno === "O"}>{TURNS.O}</Square>
       </section>
     </main>
   );

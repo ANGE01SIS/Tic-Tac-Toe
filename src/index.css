@@ -49,6 +49,10 @@ body {
   gap: 1em;
 }
 
+.turns div {
+  pointer-events: none;
+}
+
 .isTurn {
-  border-color: blue;
+  border-color: blue !important;
 }
