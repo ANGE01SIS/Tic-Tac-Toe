@@ -14,9 +14,9 @@ body {
 }
 
 .square {
-  border: 0.1em solid white;
+  border: 0.05em solid white;
   aspect-ratio: 1/1;
-  width: 7em;
+  width: 2em;
   border-radius: 0.5em;
   cursor: pointer;
   color: white;
@@ -25,8 +25,8 @@ body {
   align-items: center;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
+  font-size: 3em;
 }
-
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -55,4 +55,56 @@ body {
 
 .isTurn {
   border-color: blue !important;
+}
+
+.desactive {
+  filter: blur(10px) brightness(0.7);
+  pointer-events: none;
+}
+
+.winModule {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 3em;
+  gap: 1em;
+  border-radius: 1em;
+  border: 3px solid white;
+}
+
+.text-anuncement-wins {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  font-size: 2em;
+}
+
+.button-reset-game {
+  padding: 1em;
+  font-size: 1em;
+  background-color: black;
+  border: 1px solid white;
+  color: white;
+  border-radius: 1em;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.button-reset-game:hover {
+  background-color: white;
+  color: black;
+}
+
+@keyframes appear {
+  from {
+    font-size: 0px;
+  }
+
+  to {
+    font-size: 3em;
+  }
 }

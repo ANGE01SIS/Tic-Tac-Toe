@@ -1,43 +1,28 @@
 import { useState } from "react";
+import confetti from "canvas-confetti";
 
 export function App() {
   // LOGICA
-  const [board, SetBoard] = useState(Array(9).fill(null));
   const TURNS = {
-    X: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="red"
-        className="size-6 X"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6 18 18 6M6 6l12 12"
-        />
-      </svg>
-    ),
-    O: (
-      <svg
-        width="100"
-        height="100"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        className="O"
-      >
-        <path
-          d="M50,10 A40,40 0 1,0 50,90 A40,40 0 1,0 50,10"
-          fill="none"
-          stroke="skyblue"
-          strokeWidth="5"
-        />
-      </svg>
-    ),
+    X: "✖️",
+    O: "⭕",
   };
+
+  const combinacionesAGanar = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
   const [turno, setTurno] = useState("X");
+  const [board, SetBoard] = useState(Array(9).fill(null));
+  // DONDE UNDEFINED ES EMPATE Y NULL ES QUE NO HAY NADIE
+  let [ganador, setGanador] = useState(null);
 
   function Square({ isTurn, children, onClick }) {
     let className = `square ${isTurn ? `isTurn` : ``}`;
@@ -48,39 +33,118 @@ export function App() {
     );
   }
 
+  function WinsModule({ ganador, isActive }) {
+    if (isActive === false) {
+      return;
+    } else {
+      confetti();
+      return (
+        <section className="winModule">
+          {ganador === undefined ? (
+            <span className="text-anuncement-wins">Nadie gano</span>
+          ) : (
+            <>
+              <span className="text-anuncement-wins">Ganador:</span>
+              <Square>{ganador}</Square>
+            </>
+          )}
+          <button className="button-reset-game" onClick={resetGame}>
+            Volver a Jugar
+          </button>
+        </section>
+      );
+    }
+  }
+
+  function checkWinners(boardAct, turnoWins) {
+    for (const combinacion of combinacionesAGanar) {
+      const [a, b, c] = combinacion;
+
+      if (
+        boardAct[a] !== null &&
+        boardAct[b] !== null &&
+        boardAct[c] !== null
+      ) {
+        if (
+          boardAct[a] === boardAct[b] &&
+          boardAct[a] === boardAct[c] &&
+          boardAct[b] === boardAct[c]
+        ) {
+          switch (turnoWins) {
+            case "X":
+              setGanador("✖️");
+              return;
+            case "O":
+              setGanador("⭕");
+              return;
+          }
+        }
+      }
+    }
+
+    const boardIsFill = boardAct.every((value) => value !== null);
+
+    if (boardIsFill && ganador === null) {
+      setGanador(undefined);
+    }
+  }
+
   function ActualizeBoard(indexClickeado, valorDentroDelCuadrado) {
+    const newBoard = [...board];
     if (valorDentroDelCuadrado === null) {
       setTurno((prevTurno) => (prevTurno === "X" ? "O" : "X"));
-      const newBoard = [...board];
       newBoard[indexClickeado] = turno === "X" ? TURNS.X : TURNS.O;
       SetBoard(newBoard);
+      checkWinners(newBoard, turno);
+      console.log(ganador);
+    } else {
+      return;
     }
+  }
+
+  function resetGame() {
+    setTurno("X");
+    SetBoard(Array(9).fill(null));
+    setGanador(null);
   }
 
   // LO QUE RETORNA A LA WEB
   return (
-    <main className="game">
-      <h1 className="title">Tic Tac Toe</h1>
+    <>
+      <main
+        className={`game ${
+          ganador === "✖️" || ganador === "⭕" || ganador === undefined
+            ? `desactive`
+            : ``
+        }`}
+      >
+        <h1 className="title">Tic Tac Toe</h1>
 
-      <section className="board">
-        {board.map((cuadradoVal, index) => {
-          return (
-            <Square
-              key={index}
-              onClick={() => {
-                ActualizeBoard(index, cuadradoVal);
-              }}
-            >
-              {cuadradoVal}
-            </Square>
-          );
-        })}
-      </section>
+        <section className="board">
+          {board.map((cuadradoVal, index) => {
+            return (
+              <Square
+                key={index}
+                onClick={() => {
+                  ActualizeBoard(index, cuadradoVal);
+                }}
+              >
+                {cuadradoVal}
+              </Square>
+            );
+          })}
+        </section>
 
-      <section className="turns">
-        <Square isTurn={turno === "X"}>{TURNS.X}</Square>
-        <Square isTurn={turno === "O"}>{TURNS.O}</Square>
-      </section>
-    </main>
+        <section className="turns">
+          <Square isTurn={turno === "X"}>{TURNS.X}</Square>
+          <Square isTurn={turno === "O"}>{TURNS.O}</Square>
+        </section>
+      </main>
+
+      <WinsModule
+        ganador={ganador}
+        isActive={ganador === "✖️" || ganador === "⭕" || ganador === undefined}
+      />
+    </>
   );
 }
