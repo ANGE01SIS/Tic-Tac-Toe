@@ -19,12 +19,19 @@ export function App() {
     [2, 4, 6],
   ];
 
-  const [turno, setTurno] = useState(
-    JSON.parse(localStorage.getItem("Data")).UltimoTurno || "X"
-  );
-  const [board, SetBoard] = useState(
-    JSON.parse(localStorage.getItem("Data")).UltimoBoard || Array(9).fill(null)
-  );
+  let dataTurno;
+  let dataBoard;
+
+  if (JSON.parse(localStorage.getItem("Data"))) {
+    dataTurno = JSON.parse(localStorage.getItem("Data")).UltimoTurno;
+    dataBoard = JSON.parse(localStorage.getItem("Data")).UltimoBoard;
+  } else {
+    dataTurno = "X";
+    dataBoard = Array(9).fill(null);
+  }
+
+  const [turno, setTurno] = useState(dataTurno);
+  const [board, SetBoard] = useState(dataBoard);
   // DONDE UNDEFINED ES EMPATE Y NULL ES QUE NO HAY NADIE
   let [ganador, setGanador] = useState(null);
 
@@ -121,6 +128,7 @@ export function App() {
     setTurno("X");
     SetBoard(Array(9).fill(null));
     setGanador(null);
+    localStorage.removeItem("Data");
   }
 
   // LO QUE RETORNA A LA WEB
