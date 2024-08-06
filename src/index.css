@@ -99,6 +99,13 @@ body {
   color: black;
 }
 
+h1 + .button-reset-game {
+  position: absolute;
+  right: 10em;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 @keyframes appear {
   from {
     font-size: 0px;

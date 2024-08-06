@@ -19,8 +19,12 @@ export function App() {
     [2, 4, 6],
   ];
 
-  const [turno, setTurno] = useState("X");
-  const [board, SetBoard] = useState(Array(9).fill(null));
+  const [turno, setTurno] = useState(
+    JSON.parse(localStorage.getItem("Data")).UltimoTurno || "X"
+  );
+  const [board, SetBoard] = useState(
+    JSON.parse(localStorage.getItem("Data")).UltimoBoard || Array(9).fill(null)
+  );
   // DONDE UNDEFINED ES EMPATE Y NULL ES QUE NO HAY NADIE
   let [ganador, setGanador] = useState(null);
 
@@ -37,7 +41,6 @@ export function App() {
     if (isActive === false) {
       return;
     } else {
-      confetti();
       return (
         <section className="winModule">
           {ganador === undefined ? (
@@ -73,9 +76,13 @@ export function App() {
           switch (turnoWins) {
             case "X":
               setGanador("✖️");
+              document.querySelector(".GanarAudio").play();
+              confetti();
               return;
             case "O":
               setGanador("⭕");
+              document.querySelector(".GanarAudio").play();
+              confetti();
               return;
           }
         }
@@ -86,6 +93,7 @@ export function App() {
 
     if (boardIsFill && ganador === null) {
       setGanador(undefined);
+      document.querySelector(".EmpateAudio").play();
     }
   }
 
@@ -96,10 +104,17 @@ export function App() {
       newBoard[indexClickeado] = turno === "X" ? TURNS.X : TURNS.O;
       SetBoard(newBoard);
       checkWinners(newBoard, turno);
-      console.log(ganador);
+      document.querySelector(".MarcarAudio").play();
     } else {
       return;
     }
+
+    const LocalSave = {
+      UltimoBoard: newBoard,
+      UltimoTurno: turno === "X" ? "O" : "X",
+    };
+
+    localStorage.setItem("Data", JSON.stringify(LocalSave));
   }
 
   function resetGame() {
@@ -119,7 +134,9 @@ export function App() {
         }`}
       >
         <h1 className="title">Tic Tac Toe</h1>
-
+        <button className="button-reset-game" onClick={resetGame}>
+          Resetear Juego
+        </button>
         <section className="board">
           {board.map((cuadradoVal, index) => {
             return (
