@@ -115,3 +115,9 @@ h1 + .button-reset-game {
     font-size: 3em;
   }
 }
+
+@media (width <= 953px) {
+  h1 + .button-reset-game {
+    display: none;
+  }
+}
